@@ -123,7 +123,7 @@ If you want to rebuild the ESG database from raw source data:
 
 ## Live Demo
 
-[https://mm-bouh-esg-dashboard.streamlit.app](https://mm-bouh-esg-dashboard.streamlit.app)
+[https://esg-mmbouh.streamlit.app](https://esg-mmbouh.streamlit.app/)
 
 ## Author
 
