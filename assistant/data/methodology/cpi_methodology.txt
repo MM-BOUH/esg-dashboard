@@ -1,0 +1,20 @@
+source: Transparency International
+indicator: Corruption Perception Index
+url: https://www.transparency.org/en/cpi
+
+CORRUPTION PERCEPTION INDEX (CPI) - METHODOLOGY
+
+Definition
+The Corruption Perceptions Index (CPI) is an annual index published by Transparency International that ranks countries by their perceived levels of public sector corruption. Scores range from 0 (highly corrupt) to 100 (very clean).
+
+Data sources
+The CPI aggregates data from 13 independent sources produced by 12 institutions, including the World Bank, World Economic Forum, African Development Bank, and Economist Intelligence Unit. Each source uses a different methodology - surveys of business executives, country analysts, and assessments by risk agencies - but all measure perceptions of corruption in the public sector.
+
+How the risk score is calculated
+The raw CPI score (0-100, where 100 is cleanest) is first inverted to a corruption risk score: risk_raw = 100 - CPI_score. This means a country with a CPI of 20 (highly corrupt) gets a raw risk of 80, while a country with CPI of 90 (very clean) gets a raw risk of 10. The raw risk values are then normalized to a 0-10 scale using min-max normalization across all countries. A corruption risk score of 10 indicates the most corrupt country in the dataset; 0 indicates the cleanest.
+
+Interpretation in ESG context
+High corruption risk in a sourcing country signals elevated governance risk in supply chains: bribery, regulatory capture, fraudulent certifications, and unreliable contract enforcement. Companies sourcing from high-corruption jurisdictions face reputational risk, legal liability under anti-corruption laws (FCPA, UK Bribery Act), and operational risk. Scores above 7 typically correspond to countries where corruption is perceived as pervasive in public contracting and customs. Scores below 3 correspond to countries with strong rule of law and transparent governance (Scandinavia, New Zealand, Singapore).
+
+Limitations
+The CPI measures perceptions, not actual corruption levels, which may not fully reflect reality. It focuses exclusively on public sector corruption and does not capture private sector bribery or corporate governance failures. It is aggregated across sectors and may not reflect the specific risk in a given industry's supply chain. The CPI does not measure money laundering, tax evasion, or financial crime separately.

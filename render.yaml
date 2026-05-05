@@ -1,0 +1,21 @@
+services:
+  - type: web
+    name: esg-assistant-api
+    runtime: python
+    buildCommand: pip install -r requirements.txt && pip install -r requirements-assistant.txt
+    startCommand: bash startup.sh
+    envVars:
+      - key: MONGO_URI
+        sync: false          # set manually in Render dashboard (contains password)
+      - key: MONGO_DB_NAME
+        value: esg_dashboard
+      - key: ANTHROPIC_API_KEY
+        sync: false          # set manually in Render dashboard
+      - key: LLM_PROVIDER
+        value: anthropic
+      - key: ANTHROPIC_MODEL
+        value: claude-haiku-4-5-20251001
+      - key: CHROMA_DB_PATH
+        value: /tmp/chroma_db
+      - key: CHROMA_COLLECTION
+        value: esg_knowledge

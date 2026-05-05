@@ -1,0 +1,36 @@
+source: ESG Supply Chain Risk Dashboard
+indicator: General
+url: https://esg-mmbouh.streamlit.app/
+
+ESG SUPPLY CHAIN RISK DASHBOARD - OVERVIEW
+
+Purpose
+The ESG Supply Chain Risk Dashboard is a tool for companies to understand and quantify the Environmental, Social, and Governance (ESG) risks embedded in their supply chains. Users upload a CSV file listing their materials, the countries they are sourced from, and the associated costs. The dashboard then produces cost-weighted risk scores across five ESG indicators and visualizes them as radar charts, bar charts, and a geographic heatmap.
+
+The five ESG indicators
+1. CO2 Emissions (Environmental): CO2 per capita from Our World in Data / Global Carbon Project. Measures carbon intensity of a country's economy.
+2. Corruption (Governance): Inverted CPI score from Transparency International CPI 2025. Measures governance quality and rule of law.
+3. Forced Labor (Social): Modern slavery prevalence per 1,000 population from Walk Free Global Slavery Index 2023. Measures the risk of forced or coerced labor.
+4. Water Stress (Environmental): Projected water withdrawal-to-availability ratio from WRI Aqueduct 4.0 (2030 BAU). Measures physical water scarcity risk.
+5. Child Labor (Social): Percentage of children aged 5-17 in child labor from UNICEF Jun 2025. Measures child labor prevalence.
+
+All scores normalized to 0-10 scale
+Each indicator is normalized using min-max normalization across all 214 countries in the dataset, so that 0 = lowest risk in dataset and 10 = highest risk in dataset. This makes all five indicators directly comparable on the same radar chart.
+
+Cost-weighted risk scores
+The dashboard calculates cost-weighted risk scores. Each material's risk contribution is proportional to its share of total supply chain cost. A material that accounts for 30% of total spend contributes 30% of the weight to each indicator score. This reflects the reality that high-spend suppliers have more influence over a company's overall ESG risk profile than low-spend ones.
+
+Overall risk score
+The overall risk score for a country is the simple average of all available indicator scores. If a country is missing data for one or more indicators, the average is taken over the available indicators. Countries missing all indicator data are excluded from the analysis.
+
+Input data format
+Users upload a CSV with three required columns:
+  - material: the name of the material, component, or service
+  - country: the country where the material is sourced (must match country names in the ESG database)
+  - cost_usd: the annual cost in US dollars for that material/country combination
+
+Outputs
+  - Radar chart: overall supply chain risk profile across 5 indicators
+  - Bar chart: per-material risk breakdown for a selected indicator
+  - World map: choropleth showing overall risk by sourcing country
+  - Data table: full detail with downloadable CSV

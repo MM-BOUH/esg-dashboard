@@ -1,0 +1,20 @@
+source: Walk Free Foundation
+indicator: Forced Labor / Modern Slavery
+url: https://www.walkfree.org/global-slavery-index/
+
+GLOBAL SLAVERY INDEX - FORCED LABOR METHODOLOGY
+
+Definition
+The Global Slavery Index (GSI), published by the Walk Free Foundation, estimates the prevalence of modern slavery in each country. Modern slavery includes forced labor, forced marriage, debt bondage, human trafficking, and slavery-like practices. The key metric used in this dashboard is the estimated number of people in modern slavery per 1,000 of the population.
+
+Data sources
+The GSI draws on nationally representative surveys conducted by Gallup in partnership with Walk Free, covering over 75,000 interviews across 68 countries. For countries not surveyed directly, statistical modelling is used based on vulnerability indicators (conflict, governance, discrimination, and social protections). Modelling uses data from the ILO, World Bank, UNHCR, and UNODC.
+
+How the risk score is calculated
+The raw metric is modern slavery prevalence per 1,000 population. Higher prevalence indicates more people living in conditions of forced labor or modern slavery. Values are normalized to a 0-10 scale using min-max normalization. A score of 10 indicates the highest estimated prevalence in the dataset; 0 indicates the lowest. Countries with high scores often have weak labor protections, high poverty rates, or significant migrant worker populations with limited legal protections.
+
+Interpretation in ESG context
+Forced labor risk is directly relevant to supply chain due diligence. Companies have obligations under legislation such as the UK Modern Slavery Act 2015, the US Uyghur Forced Labor Prevention Act (UFLPA), the EU Forced Labour Regulation (2024), and France's Duty of Vigilance Law to identify and address forced labor in their supply chains. Sourcing from countries with high forced labor scores increases the likelihood of non-compliant suppliers and the potential for goods made with forced labor entering the supply chain. Sectors most associated with forced labor risk include electronics, garments, agriculture, fishing, construction, and domestic work.
+
+Limitations
+The GSI estimates are modelled for many countries where direct survey data is unavailable, introducing uncertainty. The index covers all forms of modern slavery together; specific forced labor in manufacturing supply chains may differ from the overall country score. Prevalence per 1,000 population does not capture the specific risk in a particular industry vertical. Some governments dispute GSI estimates for their countries.

@@ -1,0 +1,26 @@
+source: UNICEF Global Databases
+indicator: Child Labor
+url: https://data.unicef.org/topic/child-protection/child-labour/
+
+UNICEF CHILD LABOR DATA - METHODOLOGY
+
+Definition
+Child labor refers to work that deprives children of their childhood, potential, and dignity, and that is harmful to their physical and mental development. The metric used is the percentage of children aged 5-17 years who are engaged in child labor, as defined by ILO Convention No. 138 (Minimum Age Convention) and ILO Convention No. 182 (Worst Forms of Child Labour Convention).
+
+Data sources
+UNICEF's Global Databases compile nationally representative household survey data, primarily from MICS (Multiple Indicator Cluster Surveys) and DHS (Demographic and Health Surveys). The June 2025 update incorporates the most recent available survey for each country, with reference years varying from 2015 to 2024. For countries without recent surveys, UNICEF applies statistical modelling using regional trends and socioeconomic indicators.
+
+How the risk score is calculated
+The raw metric is the percentage of children aged 5-17 in child labor. Values are normalized to a 0-10 scale using min-max normalization across all countries with available data. A score of 10 represents the country with the highest child labor rate in the dataset; 0 represents the lowest. Countries without data receive NaN values and are excluded from the child labor dimension of the overall risk calculation.
+
+ILO definitions of child labor:
+  - Children aged 5-11 doing any economic work
+  - Children aged 12-13 doing more than 14 hours per week of light work
+  - Children aged 14-15 doing hazardous work or more than 43 hours per week
+  - Children aged 16-17 doing hazardous work
+
+Interpretation in ESG context
+Child labor in supply chains creates significant legal, reputational, and ethical risk. Key regulations include the US Tariff Act Section 307 (banning imports made with forced or indentured child labor), the EU Corporate Sustainability Due Diligence Directive (CSDDD, 2024), and the ILO Conventions ratified by most sourcing countries. Industries with elevated child labor risk in global supply chains include agriculture (cocoa, cotton, tobacco, coffee), artisanal mining, garments, and brick kilns. Countries with high child labor scores in this dashboard are predominantly in sub-Saharan Africa and South Asia. Companies with suppliers in high-scoring countries should conduct enhanced due diligence and social audits.
+
+Limitations
+Survey data is not available for all countries, and reference years vary significantly across the dataset. The aggregate child labor percentage does not distinguish between sectors; risk in a specific supplier's industry may be higher or lower than the national average. Survey methodologies differ across countries, limiting strict comparability. The metric captures the prevalence of child labor nationally but not whether a specific supplier employs children.
