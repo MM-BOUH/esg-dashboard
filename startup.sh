@@ -1,9 +1,10 @@
 #!/usr/bin/env bash
-# Render start script for the FastAPI backend.
-# Runs data setup on every cold start, then launches the server.
-# Both seed_mongo and build_index are idempotent so re-running is safe.
+# Start uvicorn first so Render detects the port, then run setup in background.
+# seed_mongo and build_index are idempotent so re-running is safe.
 
-set -e
+echo "==> Starting FastAPI..."
+uvicorn assistant.api.main:app --host 0.0.0.0 --port "${PORT:-8000}" &
+SERVER_PID=$!
 
 echo "==> Seeding MongoDB..."
 python -m assistant.scripts.seed_mongo
@@ -11,5 +12,5 @@ python -m assistant.scripts.seed_mongo
 echo "==> Building ChromaDB index..."
 python -m assistant.scripts.build_index
 
-echo "==> Starting FastAPI..."
-exec uvicorn assistant.api.main:app --host 0.0.0.0 --port "${PORT:-8000}"
+echo "==> Setup complete."
+wait $SERVER_PID
