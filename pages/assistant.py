@@ -27,7 +27,7 @@ st.set_page_config(
 _BASE = os.getenv("FASTAPI_URL", "http://localhost:8000").rstrip("/chat").rstrip("/")
 API_CHAT = f"{_BASE}/chat"
 API_CONVERSATIONS = f"{_BASE}/conversations"
-TIMEOUT = 60.0
+TIMEOUT = 120.0
 
 QUERY_TYPE_BADGE = {
     "structured_lookup": "🗄 Data lookup",
