@@ -8,17 +8,14 @@ from __future__ import annotations
 from functools import lru_cache
 
 import chromadb
-from chromadb.utils.embedding_functions import SentenceTransformerEmbeddingFunction
+from chromadb.utils.embedding_functions import DefaultEmbeddingFunction
 
 from assistant.config import get_settings
 
 
-EMBED_MODEL = "intfloat/e5-small-v2"
-
-
 @lru_cache(maxsize=1)
-def get_embed_fn() -> SentenceTransformerEmbeddingFunction:
-    return SentenceTransformerEmbeddingFunction(model_name=EMBED_MODEL)
+def get_embed_fn() -> DefaultEmbeddingFunction:
+    return DefaultEmbeddingFunction()
 
 
 @lru_cache(maxsize=1)
