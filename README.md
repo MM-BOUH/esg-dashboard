@@ -1,10 +1,10 @@
 # ESG Supply Chain Risk Dashboard
 
-A Streamlit web application that helps companies understand and visualize Environmental, Social, and Governance (ESG) risks hidden in their supply chains.
+A Streamlit web application that helps companies understand and visualize Environmental, Social, and Governance (ESG) risks hidden in their supply chains. Includes a conversational RAG assistant that answers questions about supplier risk and ESG methodology.
 
 ## What is ESG?
 
-ESG stands for **Environmental, Social, and Governance**. It's a framework used to evaluate how a company impacts the world beyond just profit:
+ESG stands for **Environmental, Social, and Governance**. It is a framework used to evaluate how a company impacts the world beyond just profit:
 
 - **Environmental**: How does the company affect the planet? (CO2 emissions, water usage, pollution)
 - **Social**: How does the company affect people? (forced labor, child labor, worker safety)
@@ -12,116 +12,156 @@ ESG stands for **Environmental, Social, and Governance**. It's a framework used 
 
 Companies that ignore ESG risks face real consequences: regulatory penalties, investor backlash, and consumer boycotts. For example, a US apparel company lost over $13 billion in revenue after being exposed for forced labor in its supply chain.
 
-## What does this app do?
+## Features
 
-Most companies know their direct suppliers (Tier 1), but have no visibility into what happens deeper in the supply chain. A smartphone company in Japan might source copper from Chile, which is mined using equipment manufactured in China, powered by coal from Indonesia. Each step carries ESG risks.
+### Dashboard (app.py)
 
-This dashboard lets users:
+Users upload a simple CSV with their supply chain cost breakdown (`material, country, cost_usd`) and receive:
 
-1. **Upload** a simple CSV file with their supply chain cost breakdown (material, country, cost)
-2. **Analyze** each sourcing country against 5 ESG risk indicators
-3. **Visualize** the results through interactive charts:
-   - **Radar chart**: Shows the overall risk profile across all 5 indicators at a glance
-   - **Bar chart**: Breaks down which material contributes the most risk for any selected indicator
-   - **World map**: Highlights which countries in the supply chain carry the highest risk
-   - **Data table**: Full detailed scores, downloadable as CSV
+- **Radar chart** - overall risk profile across all 5 indicators at a glance
+- **Bar chart** - which material drives the most risk for any selected indicator
+- **World map** - choropleth showing risk by sourcing country
+- **Data table** - full detail, downloadable as CSV
 
-## How does the scoring work?
+### RAG Assistant (pages/assistant.py)
+
+A conversational assistant that answers natural-language questions about supplier risk and ESG methodology. Example queries:
+
+- "Which of my suppliers have the highest forced-labor risk and why?"
+- "What does the CPI score measure?"
+- "Compare my Bangladesh vs Vietnam suppliers on water stress."
+- "Which material has the highest CO2 risk?"
+
+The assistant retrieves structured country and supplier data from MongoDB, fetches relevant methodology text from a ChromaDB vector index, and generates a cited answer via Claude Haiku.
+
+## How scoring works
 
 Each country is scored on 5 ESG indicators using publicly available data:
 
 | Indicator | What it measures | Source |
-|-----------|-----------------|--------|
+|---|---|---|
 | CO2 Emissions | Carbon dioxide emissions per person | Our World in Data (Global Carbon Project) |
 | Corruption | How corrupt the public sector is | Transparency International CPI 2025 |
 | Forced Labor | Prevalence of modern slavery per 1,000 people | Walk Free Global Slavery Index 2023 |
 | Water Stress | Ratio of water demand to available supply | WRI Aqueduct 4.0 |
-| Child Labor | Percentage of children (5-17) in child labor | UNICEF (Jun 2025) |
+| Child Labor | Percentage of children (5-17) in child labor | UNICEF Jun 2025 |
 
-Since each indicator uses different units (tonnes, percentages, scores), we normalize all values to a **0-10 scale** using min-max normalization:
+All indicators are normalized to a **0-10 scale** (0 = lowest risk, 10 = highest) using min-max normalization across 214 countries. Risk scores are **cost-weighted**: suppliers with higher spend contribute proportionally more to the overall risk profile.
 
-```
-score = (value - min) / (max - min) × 10
-```
-
-- **0** = lowest risk (best performing country in the dataset)
-- **10** = highest risk (worst performing country in the dataset)
-
-This allows all indicators to be compared on the same radar chart regardless of their original units.
-
-Risk scores are then **cost-weighted**: materials with higher costs contribute more to the overall risk profile. If 60% of your spending goes to a high-risk country, that matters more than 5% spent in another high-risk country.
-
-## Example
-
-The app includes a sample dataset simulating an electronics manufacturer's supply chain:
-
-| Material | Country | Cost (USD) |
-|----------|---------|------------|
-| Semiconductors | Taiwan | 1,200,000 |
-| Lithium batteries | China | 900,000 |
-| Rare earth minerals | DR Congo | 600,000 |
-| Circuit boards | Vietnam | 400,000 |
-| Display panels | South Korea | 350,000 |
-| Plastic casing | India | 300,000 |
-| Copper wiring | Chile | 250,000 |
-| Assembly labor | Malaysia | 500,000 |
-| Packaging | Indonesia | 150,000 |
-| Shipping | Singapore | 200,000 |
-
-This example reveals that rare earth minerals from DR Congo carry high forced labor risk, while lithium batteries from China contribute significant CO2 and corruption risk.
-
-## Project Structure
+## Project structure
 
 ```
 esg-dashboard/
-├── app.py                    # Streamlit dashboard application
-├── clean_and_merge.py        # Data processing script (produces the ESG database)
-├── esg_risk_by_country.csv   # Processed ESG risk database (214 countries, 5 indicators)
-├── requirements.txt          # Python dependencies
-└── README.md                 # This file
+├── app.py                          # Streamlit dashboard (untouched by assistant work)
+├── clean_and_merge.py              # Builds esg_risk_by_country.csv from raw sources
+├── esg_risk_by_country.csv         # 214 countries x 5 indicators (normalized 0-10)
+├── requirements.txt                # Dashboard dependencies
+├── requirements-assistant.txt      # Assistant dependencies
+├── docker-compose.yml              # Local MongoDB service
+├── .env.example                    # Environment variable template
+│
+├── pages/
+│   └── assistant.py                # Streamlit chat UI (second nav page)
+│
+└── assistant/
+    ├── config.py                   # Settings loaded from .env
+    ├── api/
+    │   ├── main.py                 # FastAPI app entry point
+    │   └── chat.py                 # POST /chat endpoint
+    ├── core/
+    │   ├── router.py               # Rules-based query classifier
+    │   ├── retrieval.py            # MongoDB and ChromaDB retrieval
+    │   ├── context.py              # Context assembly and citation extraction
+    │   ├── prompt.py               # LangChain prompt templates
+    │   └── llm.py                  # Claude Haiku / GPT-4o-mini abstraction
+    ├── db/
+    │   ├── mongo.py                # PyMongo client and collection accessors
+    │   └── chroma.py               # ChromaDB client and e5-small-v2 embeddings
+    ├── models/
+    │   └── schemas.py              # Pydantic models (ChatRequest, ChatResponse, Citation)
+    ├── scripts/
+    │   ├── seed_mongo.py           # Loads CSV into MongoDB; generates demo suppliers
+    │   └── build_index.py          # Chunks and embeds methodology docs into ChromaDB
+    └── data/
+        └── methodology/            # Source docs for the knowledge index (6 files)
 ```
 
-## Tech Stack
+## Architecture
 
-- **Python** — Core language
-- **Streamlit** — Web application framework
-- **Plotly** — Interactive charts (radar, bar, choropleth map)
-- **Pandas** — Data processing and analysis
-- **NumPy** — Numerical operations
+![ESG Supply Chain Risk Dashboard — System Architecture & Deployment](architecture.png)
 
-## How to run locally
+## Tech stack
+
+**Dashboard:** Python, Streamlit, Plotly, Pandas, NumPy
+
+**Assistant:** FastAPI, MongoDB (PyMongo), ChromaDB, LangChain, Anthropic Claude Haiku, `intfloat/e5-small-v2` embeddings (local, via sentence-transformers)
+
+## Running locally
+
+### Dashboard only
 
 ```bash
-# Clone the repository
 git clone https://github.com/MM-BOUH/esg-dashboard.git
 cd esg-dashboard
-
-# Create virtual environment
 python3 -m venv venv
 source venv/bin/activate
-
-# Install dependencies
 pip install -r requirements.txt
-
-# Run the app
 streamlit run app.py
 ```
 
-## Data Pipeline
+### Dashboard + assistant
 
-If you want to rebuild the ESG database from raw source data:
+**1. Install assistant dependencies**
+```bash
+pip install -r requirements-assistant.txt
+```
 
-1. Download the 5 raw datasets (see sources in the table above)
-2. Place them in the project folder with these names:
+**2. Start MongoDB**
+```bash
+docker compose up -d
+```
+
+**3. Copy and fill in your environment file**
+```bash
+cp .env.example .env
+# set ANTHROPIC_API_KEY (required)
+```
+
+**4. Seed MongoDB**
+```bash
+python -m assistant.scripts.seed_mongo
+```
+
+**5. Build the ChromaDB knowledge index**
+```bash
+python -m assistant.scripts.build_index
+```
+
+**6. Start the FastAPI backend** (keep this running in a separate terminal)
+```bash
+uvicorn assistant.api.main:app --reload --port 8000
+```
+
+**7. Start Streamlit**
+```bash
+streamlit run app.py
+```
+
+Open the app and navigate to the "assistant" page in the Streamlit sidebar.
+
+## Data pipeline
+
+To rebuild `esg_risk_by_country.csv` from raw source data:
+
+1. Place the 5 raw datasets in the project root:
    - `co2.csv` (Our World in Data)
    - `cpi.csv` (Transparency International, converted from xlsx)
    - `slavery.xlsx` (Walk Free)
    - `water.csv` (WRI Aqueduct via World Bank Data360)
    - `child_labor.xlsx` (UNICEF)
-3. Run: `python3 clean_and_merge.py`
-4. This produces a fresh `esg_risk_by_country.csv`
+2. Run: `python clean_and_merge.py`
 
-## Live Demo
+## Live demo
 
 [https://esg-mmbouh.streamlit.app](https://esg-mmbouh.streamlit.app/)
 
@@ -133,4 +173,4 @@ If you want to rebuild the ESG database from raw source data:
 
 ## License
 
-This project is open source. The ESG data used comes from publicly available sources under their respective licenses (Creative Commons, Open Data).
+This project is open source. ESG data comes from publicly available sources under their respective licenses (Creative Commons, Open Data).
