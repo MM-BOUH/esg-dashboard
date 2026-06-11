@@ -1,0 +1,47 @@
+name: Keep Render Backend Awake
+
+# Render free web services sleep after ~15 MINUTES of inactivity (unlike
+# Streamlit's ~12h). So this must run far more often than the Streamlit
+# keep-alive — every 10 minutes. A plain HTTP request is enough to reset
+# Render's idle timer (no browser/WebSocket needed, unlike Streamlit).
+#
+# The /health endpoint also pings MongoDB, so this single request keeps the
+# Render backend AND the Mongo Atlas connection warm at the same time.
+
+on:
+  schedule:
+    # Every 10 minutes. NOTE: GitHub-scheduled crons can be delayed several
+    # minutes under load; if you still see cold-start 500s, tighten to "*/5".
+    - cron: "*/10 * * * *"
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+concurrency:
+  group: keep-render-awake
+  cancel-in-progress: false
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      # TODO: replace with your exact Render URL (Render service page → the
+      # https://<name>.onrender.com link at the top). Must NOT end in a slash.
+      RENDER_URL: "https://REPLACE-ME.onrender.com"
+    steps:
+      - name: Ping /health (wakes Render + pings Mongo)
+        run: |
+          echo "Pinging $RENDER_URL/health"
+          # --max-time 90: a cold start can take 30-60s to spin the container up.
+          # --retry 3 with backoff: tolerate the first request landing mid-wake.
+          code=$(curl -sS --max-time 90 --retry 3 --retry-delay 15 --retry-all-errors \
+                   -o /tmp/body.txt -w "%{http_code}" "$RENDER_URL/health")
+          echo "HTTP $code"
+          echo "Body: $(cat /tmp/body.txt)"
+          # Treat any 2xx as success; fail the run otherwise so you get notified.
+          case "$code" in
+            2*) echo "✅ Backend awake."; ;;
+            *)  echo "❌ Unexpected status $code"; exit 1; ;;
+          esac

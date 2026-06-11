@@ -10,6 +10,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from assistant.api.chat import router as chat_router
 from assistant.api.conversations import router as conversations_router
+from assistant.db.mongo import get_client
 
 app = FastAPI(
     title="ESG Supply Chain RAG Assistant",
@@ -30,4 +31,12 @@ app.include_router(conversations_router)
 
 @app.get("/health")
 async def health() -> dict:
-    return {"status": "ok"}
+    """Liveness probe. Also pings MongoDB so a keep-alive request keeps the
+    Mongo connection warm alongside the Render web service. Never raises — a
+    Mongo hiccup returns status "degraded" rather than a 500."""
+    try:
+        get_client().admin.command("ping")
+        mongo_ok = True
+    except Exception:
+        mongo_ok = False
+    return {"status": "ok" if mongo_ok else "degraded", "mongo": mongo_ok}
